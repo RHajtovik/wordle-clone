@@ -1,0 +1,127 @@
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: sans-serif;
+}
+
+.grid {
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.tile-wrapper {
+  perspective: 1000px;
+  width: 60px;
+  height: 60px;
+}
+
+.tile-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease;
+}
+
+.tile-inner.flip {
+  transform: rotateX(180deg);
+}
+
+.tile-front, .tile-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border: 2px solid #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.tile-front {
+  background-color: white;
+  color: black;
+}
+
+.tile-back {
+  transform: rotateX(180deg);
+  color: white;
+}
+
+.tile-back.green {
+  background-color: #6aaa64;
+}
+
+.tile-back.yellow {
+  background-color: #c9b458;
+}
+
+.tile-back.gray {
+  background-color: #787c7e;
+}
+
+.invalid-text {
+  height: 20px;
+  margin-top: -20px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #c0392b;
+  font-weight: bold;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.invalid-text.visible {
+  opacity: 1;
+}
+
+.shake {
+  animation: shake 0.6s ease;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  15% { transform: translateX(-6px); }
+  30% { transform: translateX(6px); }
+  45% { transform: translateX(-5px); }
+  60% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+  90% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+.home-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+}
+
+.play-button {
+  padding: 12px 24px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background-color: #6aaa64;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.play-button:hover {
+  background-color: #538d4e;
+}
