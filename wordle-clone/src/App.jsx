@@ -1,26 +1,57 @@
 import { useState, useEffect } from 'react';
+import confetti from 'canvas-confetti';
 import './App.css';
+import GameGrid from './components/gameGrid';
+import WinScreen from './components/WinScreen';
 
 function App() {
+  // Game status
+  const [gameStarted, setGameStarted] = useState(false);
+  const [hasWon, setHasWon] = useState(false);
+
+  // Input/rows
   const [currentRow, setCurrentRow] = useState(0);
   const [guesses, setGuesses] = useState(Array(6).fill(''));
   const [tileStates, setTileStates] = useState(
     Array(6).fill().map(() => Array(5).fill({ letter: '', flip: false, color: '' }))
   );
+  const [isFlipping, setIsFlipping] = useState(false);
+  const disableInput = !gameStarted || hasWon || isFlipping;
+
+  // Feedback
   const [shakeRow, setShakeRow] = useState(null);
   const [invalidText, setInvalidText] = useState('');
-  const [gameStarted, setGameStarted] = useState(false);
+
+  const initializeGameState = () => {
+    setGuesses(Array(6).fill(''));
+    setTileStates(Array(6).fill().map(() => Array(5).fill({ letter: '', flip: false, color: '' })));
+    setCurrentRow(0);
+    setShakeRow(null);
+    setInvalidText('');
+    setHasWon(false);
+    setIsFlipping(false);
+    setGameStarted(true);
+  };
 
   const startGame = async () => {
     try {
       const res = await fetch('http://localhost:4000/random-word');
       const data = await res.json();
       if (data.success) {
-        setGameStarted(true);
+        initializeGameState();
       }
     } catch (err) {
       console.error('Failed to start game:', err);
     }
+  };
+
+  const launchConfetti = () => {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.4 },
+      zIndex: 999
+    });
   };
 
   const checkGuessWithAPI = async (word) => {
@@ -39,7 +70,10 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (disableInput) return;
+
       const key = e.key.toUpperCase();
+
       if (!/^[A-Z]$/.test(key) && key !== 'BACKSPACE' && key !== 'ENTER') return;
 
       const currentGuess = guesses[currentRow];
@@ -61,6 +95,8 @@ function App() {
               return;
             }
 
+            setIsFlipping(true);
+
             // Update each tile with letter + flip + color (one-by-one)
             result.colors.forEach((color, i) => {
               setTimeout(() => {
@@ -79,14 +115,18 @@ function App() {
             // Move to next row after flips finish
             setTimeout(() => {
               if (result.correct) {
-                console.log('Correct guess!');
+                // Delay win screen until flip finishes
+                setTimeout(() => {
+                  setHasWon(true);
+                  launchConfetti();
+                }, 250); // same as flip timing
               } else {
-                console.log('Wrong guess:', currentGuess);
+                if (currentRow < 5) {
+                  setCurrentRow((prev) => prev + 1);
+                }
               }
 
-              if (currentRow < 5) {
-                setCurrentRow((prev) => prev + 1);
-              }
+            setIsFlipping(false);
             }, 5 * 500);
           });
         }
@@ -112,35 +152,24 @@ function App() {
   }, [guesses, currentRow]);
 
   return (
-    <div className="game-container">
-      {!gameStarted ? (
-        <div className="home-screen">
-          <h1>Wordle Clone</h1>
-          <button className="play-button" onClick={startGame}>Play</button>
+    <>
+      <h1>Wordle Clone</h1>
+      <div className={`invalid-text ${invalidText ? 'visible' : ''}`}>{invalidText}</div>
+      <GameGrid tileStates={tileStates} guesses={guesses} shakeRow={shakeRow} />
+
+      {/* Start game overlay */}
+      {!gameStarted && (
+        <div className="overlay-screen">
+          <div className="overlay-box">
+            <h2>Ready to play?</h2>
+            <button className="play-button" onClick={startGame}>Play</button>
+          </div>
         </div>
-      ) : (
-        <>
-          <h1>Wordle Clone</h1>
-          <div className={`invalid-text ${invalidText ? 'visible' : ''}`}>
-            {invalidText}
-          </div>
-          <div className="grid">
-            {tileStates.map((row, rowIndex) => (
-              <div className={`row ${shakeRow === rowIndex ? 'shake' : ''}`} key={rowIndex}>
-                {row.map((tile, colIndex) => (
-                  <div className="tile-wrapper" key={colIndex}>
-                    <div className={`tile-inner ${tile.flip ? 'flip' : ''}`}>
-                      <div className="tile-front">{guesses[rowIndex][colIndex] || ''}</div>
-                      <div className={`tile-back ${tile.color}`}>{tile.letter}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </>
       )}
-    </div>
+
+      {/* Win screen */}
+      {hasWon && <WinScreen startGame={startGame} />}
+    </>
   );
 }
 

@@ -125,3 +125,80 @@
 .play-button:hover {
   background-color: #538d4e;
 }
+
+.win-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.win-box {
+  background: white;
+  padding: 32px 48px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.win-box h2 {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  color: black;
+}
+
+.win-box button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  background-color: #6aaa64;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.overlay-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.overlay-box {
+  background: white;
+  padding: 32px 48px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.overlay-box h2 {
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.play-button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  background-color: #6aaa64;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.play-button:hover {
+  background-color: #538d4e;
+}
