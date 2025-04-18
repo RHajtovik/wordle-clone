@@ -1,10 +1,10 @@
 import React from 'react';
 
 const WinScreen = ({ startGame }) => (
-  <div className="win-screen">
-    <div className="win-box">
+  <div className="overlay-screen">
+    <div className="overlay-box">
       <h2>You Win! 🎉</h2>
-      <button onClick={startGame}>Play Again</button>
+      <button className="play-button" onClick={startGame}>Play Again</button>
     </div>
   </div>
 );

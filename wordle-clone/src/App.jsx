@@ -153,7 +153,7 @@ function App() {
 
   return (
     <>
-      <h1>Wordle Clone</h1>
+      <h1 className="title">Wordle Clone</h1>
       <div className={`invalid-text ${invalidText ? 'visible' : ''}`}>{invalidText}</div>
       <GameGrid tileStates={tileStates} guesses={guesses} shakeRow={shakeRow} />
 
