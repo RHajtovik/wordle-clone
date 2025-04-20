@@ -2,18 +2,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: sans-serif;
+  gap: 24px; /* Controls vertical spacing between title, grid, keyboard, etc. */
+  padding-top: 24px;
 }
 
 .title {
   text-align: center;
   color: var(--text-color);
+  margin: 0;
 }
 
 .grid {
   display: grid;
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: repeat(6, auto);
   gap: 10px;
+  max-width: 320px; /* Limit overall grid width */
+  margin: 0 auto; /* Center it horizontally */
 }
 
 .row {
@@ -24,8 +28,8 @@
 
 .tile-wrapper {
   perspective: 1000px;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
 }
 
 .tile-inner {
@@ -45,11 +49,11 @@
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  border: 2px solid var(--tile-border);
+  border: 1px solid var(--tile-border);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   text-transform: uppercase;
 }
@@ -77,15 +81,20 @@
 }
 
 .invalid-text {
-  height: 20px;
-  margin-top: -20px;
-  margin-bottom: 20px;
-  text-align: center;
-  color: #c0392b;
-  font-weight: bold;
+  position: absolute;
+  bottom: -14px; /* move it below the title */
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 14px;
+  color: #bf291f;
+  font-weight: bold;
   opacity: 0;
   pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.title-wrapper {
+  position: relative;
 }
 
 .invalid-text.visible {
@@ -146,4 +155,56 @@
 
 .play-button:hover {
   background-color: #538d4e;
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 6px;
+}
+
+.key {
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  background-color: #818384;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  width: 36px;
+  text-align: center;
+}
+
+.key.green {
+  background-color: var(--green);
+  color: white;
+}
+
+.key.yellow {
+  background-color: var(--yellow);
+  color: white;
+}
+
+.key.gray {
+  background-color: var(--gray);
+  color: white;
+}
+
+.key-wide {
+  width: 84px;
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.signiture {
+  justify-self: center;
+  color: white;
+  text-align: center;
 }

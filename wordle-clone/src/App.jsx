@@ -3,11 +3,16 @@ import confetti from 'canvas-confetti';
 import './App.css';
 import GameGrid from './components/gameGrid';
 import WinScreen from './components/WinScreen';
+import StartScreen from './components/StartScreen';
+import LoseScreen from './components/LoseScreen';
+import VirtualKeyboard from './components/VirtualKeyboard';
 
 function App() {
   // Game status
   const [gameStarted, setGameStarted] = useState(false);
   const [hasWon, setHasWon] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [targetWord, setTargetWord] = useState('');
 
   // Input/rows
   const [currentRow, setCurrentRow] = useState(0);
@@ -16,7 +21,8 @@ function App() {
     Array(6).fill().map(() => Array(5).fill({ letter: '', flip: false, color: '' }))
   );
   const [isFlipping, setIsFlipping] = useState(false);
-  const disableInput = !gameStarted || hasWon || isFlipping;
+  const disableInput = !gameStarted || hasWon || gameOver || isFlipping;
+  const [keyColors, setKeyColors] = useState({});
 
   // Feedback
   const [shakeRow, setShakeRow] = useState(null);
@@ -112,6 +118,17 @@ function App() {
               }, i * 500); // delay each flip
             });
 
+            // Update Keyboard
+            result.colors.forEach((color, i) => {
+              const letter = currentGuess[i];
+              setKeyColors(prev => {
+                const current = prev[letter];
+                if (current === 'green') return prev; // don't downgrade
+                if (current === 'yellow' && color === 'gray') return prev;
+                return { ...prev, [letter]: color };
+              });
+            });
+
             // Move to next row after flips finish
             setTimeout(() => {
               if (result.correct) {
@@ -119,10 +136,19 @@ function App() {
                 setTimeout(() => {
                   setHasWon(true);
                   launchConfetti();
-                }, 250); // same as flip timing
+                }, 250);
               } else {
                 if (currentRow < 5) {
                   setCurrentRow((prev) => prev + 1);
+                }
+                else {
+                  setTimeout(() => {
+                    fetch('http://localhost:4000/reveal')
+                      .then(res => res.json())
+                      .then(data => {
+                        setTargetWord(data.word);
+                      });
+                  }, 250); 
                 }
               }
 
@@ -153,22 +179,32 @@ function App() {
 
   return (
     <>
-      <h1 className="title">Wordle Clone</h1>
-      <div className={`invalid-text ${invalidText ? 'visible' : ''}`}>{invalidText}</div>
-      <GameGrid tileStates={tileStates} guesses={guesses} shakeRow={shakeRow} />
+      <div className='game-container'>
+      <div className="title-wrapper">
+        <h1 className="title">Wordle Clone</h1>
+        <div className={`invalid-text ${invalidText ? 'visible' : ''}`}>{invalidText}</div>
+      </div>
 
-      {/* Start game overlay */}
-      {!gameStarted && (
-        <div className="overlay-screen">
-          <div className="overlay-box">
-            <h2>Ready to play?</h2>
-            <button className="play-button" onClick={startGame}>Play</button>
-          </div>
-        </div>
-      )}
+        {/* Game Grid */}
+        <GameGrid tileStates={tileStates} guesses={guesses} shakeRow={shakeRow} />
 
-      {/* Win screen */}
-      {hasWon && <WinScreen startGame={startGame} />}
+        {/* Virtual Keyboard */}
+        <VirtualKeyboard
+          keyColors={keyColors}
+          onKeyPress={(key) => window.dispatchEvent(new KeyboardEvent('keydown', { key }))}
+          disabled={disableInput}
+        />
+        <p className='signiture'>Ryan Hajtovik - GoLinks 2025 Summer Intern</p>
+
+        {/* Start game Overlay */}
+        {!gameStarted && <StartScreen startGame={startGame} />}
+
+        {/* Win screen Overlay */}
+        {hasWon && <WinScreen startGame={startGame} />}
+
+        {/* Lose screen Overlay */}
+        {gameOver && <LoseScreen startGame={startGame} word={targetWord} />}
+      </div>
     </>
   );
 }

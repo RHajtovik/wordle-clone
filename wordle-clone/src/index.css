@@ -5,9 +5,9 @@
   --bg-color: #fff;
 
   /* Wordle colors */
-  --green: #6aaa64;
-  --yellow: #c9b458;
-  --gray: #787c7e;
+  --green: #538d4e;
+  --yellow: #B5934b;
+  --gray: #3a3a3c;
 
   /* overlay */
   --win-box-bg: #ffffff;
@@ -20,11 +20,11 @@
     --text-color: #eee;
     --bg-color: #121212;
 
-    --green: #6aaa64;
-    --yellow: #c9b458;
-    --gray: #787c7e;
+    --green: #538d4e;
+    --yellow: #B5934b;
+    --gray: #3a3a3c;
 
-    --win-box-bg: #1e1e1e;
+    --win-box-bg: #1f1f1d;
     --win-box-text: #f0f0f0;
   }
 }
