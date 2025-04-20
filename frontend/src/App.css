@@ -65,7 +65,7 @@
 
 .tile-back {
   transform: rotateX(180deg);
-  color: var(--text-color);
+  color: white;
 }
 
 .tile-back.green {
@@ -205,6 +205,6 @@
 
 .signiture {
   justify-self: center;
-  color: white;
+  color: var(--text-color);
   text-align: center;
 }

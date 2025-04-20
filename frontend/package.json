@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "dev": "concurrently \"npm run server\" \"npm run dev-client\"",
-    "server": "cd backend && node index.js"
+    "server": "cd ../backend && node index.js"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.3",
