@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LoseScreen = ({ startGame }) => (
+const LoseScreen = ({ startGame, word }) => (
   <div className="overlay-screen">
     <div className="overlay-box">
       <h2>You Lose! 😢</h2>

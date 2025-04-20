@@ -16,6 +16,7 @@ class WordleGame {
             word = randomWord.toUpperCase();
     
             const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+            console.log('Dictionary API status:', dictRes.status);
             isValid = dictRes.ok;
           } catch (err) {
             console.error('Error fetching word:', err);
@@ -23,15 +24,16 @@ class WordleGame {
         }
     
         this.targetWord = word;
+        return word;
       }
 
   getTargetWord() {
     return this.targetWord;
   }
 
-  async checkGuess(word) {
+  async checkGuess(word, targetWord) {
     const guess = word.toUpperCase();
-    const target = this.targetWord.toUpperCase();
+    const target = targetWord.toUpperCase();;
 
     try {
       const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${guess}`);

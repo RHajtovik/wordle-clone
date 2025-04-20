@@ -41,7 +41,9 @@ function App() {
 
   const startGame = async () => {
     try {
-      const res = await fetch('http://localhost:4000/random-word');
+      const res = await fetch('http://localhost:4000/random-word', {
+        credentials:'include'
+      });
       const data = await res.json();
       if (data.success) {
         initializeGameState();
@@ -65,6 +67,7 @@ function App() {
       const res = await fetch('http://localhost:4000/guess', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ word }),
       });
       return await res.json();
@@ -143,10 +146,13 @@ function App() {
                 }
                 else {
                   setTimeout(() => {
-                    fetch('http://localhost:4000/reveal')
+                    fetch('http://localhost:4000/reveal', {
+                      credentials: 'include'
+                    })
                       .then(res => res.json())
                       .then(data => {
                         setTargetWord(data.word);
+                        setGameOver(true); vvvvvvvv
                       });
                   }, 250); 
                 }

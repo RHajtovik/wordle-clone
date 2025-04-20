@@ -1,13 +1,22 @@
 // server.js
 const express = require('express');
+const session = require('express-session');
 const cors = require('cors');
 const WordleGame = require('./wordleGame');
 
 const app = express();
 const PORT = 4000;
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true 
+}));
 app.use(express.json());
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true
+}));
 
 const game = new WordleGame();
 
@@ -15,16 +24,27 @@ app.get('/target', (req, res) => {
   res.json({ message: 'Target word is set.' });
 });
 
-app.get('/random-word', (req, res) => {
-  game.pickRandomWord();
-  res.json({ success: true });
+app.get('/random-word', async (req, res) => {
+  try {
+    const word = await game.pickRandomWord();
+    req.session.targetWord = word;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Failed to pick random word:', err);
+    res.status(500).json({ success: false });
+  }
 });
 
 app.post('/guess', async (req, res) => {
-  const { word } = req.body;
+  const guess = req.body.word;
+  const target = req.session.targetWord;
+
+  if (!target) {
+    return res.status(400).json({ error: 'Game not initialized' });
+  }
 
   try {
-    const result = await game.checkGuess(word);
+    const result = await game.checkGuess(guess, target);
     res.json(result);
   } catch (err) {
     console.error('API error:', err);
@@ -33,9 +53,9 @@ app.post('/guess', async (req, res) => {
 });
 
 app.get('/reveal', (req, res) => {
-  const word = game.getTargetWord();
+  const word = req.session.targetWord;
   if (!word) {
-    return res.status(400).json({ error: 'No word has been set yet.' });
+    return res.status(400).json({ error: 'No word set for this session' });
   }
   res.json({ word });
 });
