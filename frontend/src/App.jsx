@@ -29,7 +29,7 @@ function App() {
   const [invalidText, setInvalidText] = useState('');
 
   // Backend URL
-  const BASE_URL = 'https://wordle-backend-env-2.eba-stm2gqev.us-east-2.elasticbeanstalk.com';
+  const BASE_URL = 'https://wordle-clone-moer.onrender.com/';
 
   const initializeGameState = () => {
     setGuesses(Array(6).fill(''));
