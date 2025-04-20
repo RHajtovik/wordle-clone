@@ -155,7 +155,7 @@ function App() {
                       .then(res => res.json())
                       .then(data => {
                         setTargetWord(data.word);
-                        setGameOver(true); vvvvvvvv
+                        setGameOver(true);
                       });
                   }, 250); 
                 }
