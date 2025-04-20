@@ -5,17 +5,21 @@ const cors = require('cors');
 const WordleGame = require('./wordleGame');
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://main.dld996lhzd3lh.amplifyapp.com',
   credentials: true 
 }));
 app.use(express.json());
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    secure: true,
+    sameSite: 'none'
+  }
 }));
 
 const game = new WordleGame();

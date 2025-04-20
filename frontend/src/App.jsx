@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import './App.css';
-import GameGrid from './components/gameGrid';
+import GameGrid from './components/GameGrid';
 import WinScreen from './components/WinScreen';
 import StartScreen from './components/StartScreen';
 import LoseScreen from './components/LoseScreen';
@@ -28,6 +28,9 @@ function App() {
   const [shakeRow, setShakeRow] = useState(null);
   const [invalidText, setInvalidText] = useState('');
 
+  // Backend URL
+  const BASE_URL = 'http://wordle-backend-env-2.eba-stm2gqev.us-east-2.elasticbeanstalk.com/';
+
   const initializeGameState = () => {
     setGuesses(Array(6).fill(''));
     setTileStates(Array(6).fill().map(() => Array(5).fill({ letter: '', flip: false, color: '' })));
@@ -41,7 +44,7 @@ function App() {
 
   const startGame = async () => {
     try {
-      const res = await fetch('http://localhost:4000/random-word', {
+      const res = await fetch(`${BASE_URL}/random-word`, {
         credentials:'include'
       });
       const data = await res.json();
@@ -64,7 +67,7 @@ function App() {
 
   const checkGuessWithAPI = async (word) => {
     try {
-      const res = await fetch('http://localhost:4000/guess', {
+      const res = await fetch(`${BASE_URL}/guess`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -146,7 +149,7 @@ function App() {
                 }
                 else {
                   setTimeout(() => {
-                    fetch('http://localhost:4000/reveal', {
+                    fetch(`${BASE_URL}/reveal`, {
                       credentials: 'include'
                     })
                       .then(res => res.json())
