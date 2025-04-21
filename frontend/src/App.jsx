@@ -39,6 +39,8 @@ const initializeGameState = () => {
   setInvalidText('');
   setHasWon(false);
   setIsFlipping(false);
+  setGameOver(false);
+  setKeyColors({});
   setGameStarted(true);
 };
 
