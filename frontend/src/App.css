@@ -208,3 +208,35 @@
   color: var(--text-color);
   text-align: center;
 }
+
+
+@media (max-width: 600px) {
+  .tile-front, .tile-back {
+    font-size: 1.2rem;
+  }
+
+  .overlay-box h2 {
+    font-size: 1.5rem;
+  }
+
+  .play-button {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
+
+  .key {
+    width: 28px;
+    font-size: 12px;
+    padding: 10px;
+  }
+
+  .key-wide {
+    width: 64px;
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+
+  .signiture {
+    font-size: 12px;
+  }
+}

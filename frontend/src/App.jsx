@@ -27,6 +27,7 @@ function App() {
   // Feedback
   const [shakeRow, setShakeRow] = useState(null);
   const [invalidText, setInvalidText] = useState('');
+  const enterLocked = useRef(false);
 
   // Backend URL
   const BASE_URL = 'https://wordle-clone-moer.onrender.com';
@@ -39,6 +40,7 @@ function App() {
     setInvalidText('');
     setHasWon(false);
     setIsFlipping(false);
+    setKeyColors({});
     setGameStarted(true);
   };
 
@@ -81,8 +83,9 @@ function App() {
   };
 
   useEffect(() => {
+
     const handleKeyDown = (e) => {
-      if (disableInput) return;
+      if (disableInput || enterLocked.current) return;
 
       const key = e.key.toUpperCase();
 
@@ -92,6 +95,7 @@ function App() {
 
       if (key === 'ENTER') {
         if (currentGuess.length === 5) {
+          enterLocked.current = true;
           checkGuessWithAPI(currentGuess).then((result) => {
             if (!result.valid) {
               console.log('Not a valid word:', currentGuess);
@@ -102,6 +106,7 @@ function App() {
               setTimeout(() => {
                 setShakeRow(null);
                 setInvalidText('');
+                enterLocked.current = false;
               }, 600);
 
               return;
@@ -138,30 +143,30 @@ function App() {
             // Move to next row after flips finish
             setTimeout(() => {
               if (result.correct) {
-                // Delay win screen until flip finishes
+                // Show win screen after flips
                 setTimeout(() => {
                   setHasWon(true);
                   launchConfetti();
+                  enterLocked.current = false;
                 }, 250);
-              } else {
-                if (currentRow < 5) {
-                  setCurrentRow((prev) => prev + 1);
-                }
-                else {
-                  setTimeout(() => {
-                    fetch(`${BASE_URL}/reveal`, {
-                      credentials: 'include'
-                    })
-                      .then(res => res.json())
-                      .then(data => {
-                        setTargetWord(data.word);
-                        setGameOver(true);
-                      });
-                  }, 250); 
-                }
+              } 
+              else if (currentRow < 5) {
+                // Proceed to next row
+                setCurrentRow((prev) => prev + 1);
+                enterLocked.current = false;
+              } 
+              else {
+                // Game over - reveal word
+                setTimeout(() => {
+                  fetch(`${BASE_URL}/reveal`, { credentials: 'include' })
+                    .then(res => res.json())
+                    .then(data => {
+                      setTargetWord(data.word);
+                      setGameOver(true);
+                      enterLocked.current = false;
+                    });
+                }, 250);
               }
-
-            setIsFlipping(false);
             }, 5 * 500);
           });
         }

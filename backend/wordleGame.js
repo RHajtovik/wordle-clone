@@ -1,31 +1,31 @@
 
 
 class WordleGame {
-    constructor() {
-        this.targetWord = '';
+  constructor() {
+    this.targetWord = '';
+  }
+    
+  async pickRandomWord() {
+    let word = '';
+    let isValid = false;
+    
+    while (!isValid) {
+      try {
+        const res = await fetch('https://random-word-api.herokuapp.com/word?length=5');
+        const [randomWord] = await res.json();
+        word = randomWord.toUpperCase();
+    
+        const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        console.log('Dictionary API status:', dictRes.status);
+        isValid = dictRes.ok;
+      } catch (err) {
+          console.error('Error fetching word:', err);
       }
+    }
     
-      async pickRandomWord() {
-        let word = '';
-        let isValid = false;
-    
-        while (!isValid) {
-          try {
-            const res = await fetch('https://random-word-api.herokuapp.com/word?length=5');
-            const [randomWord] = await res.json();
-            word = randomWord.toUpperCase();
-    
-            const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-            console.log('Dictionary API status:', dictRes.status);
-            isValid = dictRes.ok;
-          } catch (err) {
-            console.error('Error fetching word:', err);
-          }
-        }
-    
-        this.targetWord = word;
-        return word;
-      }
+    this.targetWord = word;
+    return word;
+  }
 
   getTargetWord() {
     return this.targetWord;
@@ -72,6 +72,7 @@ class WordleGame {
         correct: guess === target,
         colors,
       };
+      
     } catch (err) {
       console.error('Validation error:', err);
       return { valid: false, correct: false, colors: [] };
