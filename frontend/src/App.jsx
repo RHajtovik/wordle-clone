@@ -80,6 +80,9 @@ const checkGuessWithAPI = async (word) => {
   }
 };
 
+let lastEnterTime = 0;
+const ENTER_DEBOUNCE_MS = 500;
+
 useEffect(() => {
   const handleKeyDown = (e) => {
     if (disableInput) return;
@@ -90,6 +93,11 @@ useEffect(() => {
     const currentGuess = guesses[currentRow];
 
     if (key === 'ENTER') {
+      // debounce
+      const now = Date.now();
+      if (now - lastEnterTime < ENTER_DEBOUNCE_MS) return;
+      lastEnterTime = now;
+
       if (currentGuess.length === 5) {
         setIsFlipping(true);
 
