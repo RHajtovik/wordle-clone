@@ -81,11 +81,12 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const key = e.key.toUpperCase();
-      const currentGuess = guesses[currentRow];
-
       if (disableInput) return;
+ 
+      const key = e.key.toUpperCase();
       if (!/^[A-Z]$/.test(key) && key !== 'BACKSPACE' && key !== 'ENTER') return;
+      
+      const currentGuess = guesses[currentRow];
       
       if (key === 'ENTER') {
         if (currentGuess.length === 5) {

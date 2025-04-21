@@ -28,6 +28,7 @@ app.use(session({
   cookie: {
     secure: true,
     sameSite: 'none',
+    domain: 'https://wordle-clone-moer.onrender.com'
   }
 }));
 
