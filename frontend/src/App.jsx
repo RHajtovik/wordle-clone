@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import './App.css';
 import GameGrid from './components/GameGrid';
@@ -47,6 +47,8 @@ function App() {
         credentials:'include'
       });
       const data = await res.json();
+      console.log(data)
+
       if (data.success) {
         initializeGameState();
       }
@@ -103,7 +105,7 @@ function App() {
               setTimeout(() => {
                 setShakeRow(null);
                 setInvalidText('');
-                setIsFlipping(false)
+                setIsFlipping(false);
               }, 600);
 
               return;
