@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const cors = require('cors');
 const WordleGame = require('./wordleGame');
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.set('trust proxy', 1);
 
 app.use(session({
+  store: new FileStore({}),
   secret: 'your-secret-key',
   resave: false,
   saveUninitialized: true,
@@ -48,6 +50,7 @@ app.post('/guess', async (req, res) => {
   const target = req.session.targetWord;
 
   if (!target) {
+    console.log('!target')
     return res.status(400).json({ error: 'Game not initialized' });
   }
 
