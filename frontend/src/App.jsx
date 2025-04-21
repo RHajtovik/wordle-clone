@@ -29,7 +29,7 @@ const [shakeRow, setShakeRow] = useState(null);
 const [invalidText, setInvalidText] = useState('');
 
 // Backend URL
-const BASE_URL = 'https://main.dld996lhzd3lh.amplifyapp.com';
+const BASE_URL = 'https://play-wordle.rakun.company';
 
 const initializeGameState = () => {
   setGuesses(Array(6).fill(''));
