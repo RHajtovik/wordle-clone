@@ -50,7 +50,8 @@ const startGame = async () => {
 
   try {
     const res = await fetch(`${BASE_URL}/random-word`, {
-      credentials: 'include'
+      credentials: 'include',
+      cache: 'no-store'
     });
     const data = await res.json();
   } catch (err) {
