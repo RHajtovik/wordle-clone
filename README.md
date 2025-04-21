@@ -1,11 +1,37 @@
-# wordle-clone
-Wordle Game for GoLinks 2025 Intership
-Ryan Hajtovik
+# Wordle Clone
+A modern Wordle-style game built for the GoLinks 2025 Internship Challenge  
+Created by **Ryan Hajtovik**
 
 ## Live Demo
-Check out the deployed app here: [Wordle Clone on Amplify](https://main.dld996lhzd3lh.amplifyapp.com)
+Play it here: [https://play-wordle.rakun.company](https://play-wordle.rakun.company)
+
+---
 
 ## Dual Server Architecture
-This project uses a **dual server setup**, separating the frontend and backend into independent services:
-- **Frontend**: Hosted on [AWS Amplify](https://main.dld996lhzd3lh.amplifyapp.com), built with React and styled for desktop and mobile experiences.
-- **Backend**: Hosted separately on [Render](https://wordle-clone-moer.onrender.com), built with Express.js and handles game logic, session management, and word validation.
+This project uses a **dual-server architecture**, separating concerns for scalability and maintainability:
+
+- **Frontend**:  
+  - Deployed via [AWS Amplify](https://play-wordle.rakun.company)  
+  - Built with React (Vite)  
+  - Responsive and mobile-friendly UI  
+  - Uses a virtual keyboard for touch support  
+- **Backend**:  
+  - Hosted on [Render](https://wordle-api.rakun.company)  
+  - Built with Express.js  
+  - Handles session-based game logic, word validation, and result tracking  
+  - Supports cross-origin cookie sessions with full Safari compatibility
+
+---
+
+## Features
+
+- **Fully responsive UI** — works on desktop and mobile devices
+- **Cross-browser compatibility** — tested on Chrome and Safari (including iOS)
+- **Session-based gameplay** — stateful tracking using secure, cross-domain cookies
+- **Flipping tile animations** — reveals correct/incorrect guesses just like real Wordle
+- **Win & loss screen support** — includes confetti on win and a game-over screen on loss
+- **Backend word validation** — all guesses checked server-side (not hardcoded on frontend)
+- **Debounced input** — prevents accidental double submissions (keyboard + button)
+- **Cloud deployed** — separate domains with working CORS and cookie/session config
+
+---
