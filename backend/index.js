@@ -23,7 +23,7 @@ app.use(session({
     sameSite: 'none',
     path: '/',
     httpOnly: true,
-    domain: '.rakun.company'
+    domain: 'wordle-api.rakun.company'
   }
 }));
 
