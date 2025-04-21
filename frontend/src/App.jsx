@@ -29,7 +29,7 @@ const [shakeRow, setShakeRow] = useState(null);
 const [invalidText, setInvalidText] = useState('');
 
 // Backend URL
-const BASE_URL = 'https://wordle-clone-moer.onrender.com';
+const BASE_URL = 'https://wordle-api.rakun.company';
 
 const initializeGameState = () => {
   setGuesses(Array(6).fill(''));
