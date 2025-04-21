@@ -41,6 +41,7 @@ function App() {
     setHasWon(false);
     setIsFlipping(false);
     setKeyColors({});
+    enterLocked.current = false;
     setGameStarted(true);
   };
 
@@ -83,113 +84,120 @@ function App() {
   };
 
   useEffect(() => {
-
+    const currentRowRef = useRef(currentRow);
+    const guessesRef = useRef(guesses);
+  
+    // Keep refs in sync with state
+    useEffect(() => {
+      currentRowRef.current = currentRow;
+      guessesRef.current = guesses;
+    }, [currentRow, guesses]);
+  
     const handleKeyDown = (e) => {
       if (disableInput || enterLocked.current) return;
-
+  
       const key = e.key.toUpperCase();
-
       if (!/^[A-Z]$/.test(key) && key !== 'BACKSPACE' && key !== 'ENTER') return;
-
-      const currentGuess = guesses[currentRow];
-
+  
+      const currentGuess = guessesRef.current[currentRowRef.current];
+  
       if (key === 'ENTER') {
         if (currentGuess.length === 5) {
           enterLocked.current = true;
+  
           checkGuessWithAPI(currentGuess).then((result) => {
             if (!result.valid) {
               console.log('Not a valid word:', currentGuess);
-
-              setShakeRow(currentRow);
+              setShakeRow(currentRowRef.current);
               setInvalidText('Invalid Word');
-
+  
               setTimeout(() => {
                 setShakeRow(null);
                 setInvalidText('');
                 enterLocked.current = false;
               }, 600);
-
+  
               return;
             }
-
+  
             setIsFlipping(true);
-
-            // Update each tile with letter + flip + color (one-by-one)
+  
+            // Flip tiles
             result.colors.forEach((color, i) => {
               setTimeout(() => {
                 setTileStates((prev) => {
                   const updated = prev.map((row) => [...row]);
-                  updated[currentRow][i] = {
+                  updated[currentRowRef.current][i] = {
                     letter: currentGuess[i],
                     flip: true,
-                    color: color
+                    color,
                   };
                   return updated;
                 });
-              }, i * 500); // delay each flip
+              }, i * 500);
             });
-
-            // Update Keyboard
+  
+            // Update keyboard colors
             result.colors.forEach((color, i) => {
               const letter = currentGuess[i];
-              setKeyColors(prev => {
+              setKeyColors((prev) => {
                 const current = prev[letter];
-                if (current === 'green') return prev; // don't downgrade
+                if (current === 'green') return prev;
                 if (current === 'yellow' && color === 'gray') return prev;
                 return { ...prev, [letter]: color };
               });
             });
-
-            // Move to next row after flips finish
+  
+            // After flips
             setTimeout(() => {
               if (result.correct) {
-                // Show win screen after flips
                 setTimeout(() => {
                   setHasWon(true);
                   launchConfetti();
                   enterLocked.current = false;
                 }, 250);
-              } 
-              else if (currentRow < 5) {
-                // Proceed to next row
-                setCurrentRow((prev) => prev + 1);
+              } else if (currentRowRef.current < 5) {
+                setCurrentRow((prev) => {
+                  currentRowRef.current = prev + 1;
+                  return prev + 1;
+                });
                 enterLocked.current = false;
-              } 
-              else {
-                // Game over - reveal word
+              } else {
                 setTimeout(() => {
                   fetch(`${BASE_URL}/reveal`, { credentials: 'include' })
-                    .then(res => res.json())
-                    .then(data => {
+                    .then((res) => res.json())
+                    .then((data) => {
                       setTargetWord(data.word);
                       setGameOver(true);
                       enterLocked.current = false;
                     });
                 }, 250);
               }
+  
+              setIsFlipping(false);
             }, 5 * 500);
           });
         }
         return;
       }
-
+  
       if (key === 'BACKSPACE') {
-        const updated = [...guesses];
-        updated[currentRow] = currentGuess.slice(0, -1);
+        const updated = [...guessesRef.current];
+        updated[currentRowRef.current] = currentGuess.slice(0, -1);
         setGuesses(updated);
         return;
       }
-
+  
       if (currentGuess.length < 5) {
-        const updated = [...guesses];
-        updated[currentRow] = currentGuess + key;
+        const updated = [...guessesRef.current];
+        updated[currentRowRef.current] = currentGuess + key;
         setGuesses(updated);
       }
     };
-
+  
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [guesses, currentRow]);
+  }, [disableInput, checkGuessWithAPI]);
 
   return (
     <>
