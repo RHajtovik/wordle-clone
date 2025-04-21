@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect} from 'react';
 import confetti from 'canvas-confetti';
 import './App.css';
 import GameGrid from './components/GameGrid';
@@ -17,17 +17,14 @@ function App() {
   // Input/rows
   const [currentRow, setCurrentRow] = useState(0);
   const [guesses, setGuesses] = useState(Array(6).fill(''));
-  const [tileStates, setTileStates] = useState(
-    Array(6).fill().map(() => Array(5).fill({ letter: '', flip: false, color: '' }))
-  );
-  const [isFlipping, setIsFlipping] = useState(false);
-  const disableInput = !gameStarted || hasWon || gameOver || isFlipping;
-  const [keyColors, setKeyColors] = useState({});
+  const [tileStates, setTileStates] = useState(Array(6).fill().map(() => Array(5).fill({ letter: '', flip: false, color: '' })));
 
   // Feedback
   const [shakeRow, setShakeRow] = useState(null);
   const [invalidText, setInvalidText] = useState('');
-  const enterLocked = useRef(false);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [keyColors, setKeyColors] = useState({});
+  const disableInput = !gameStarted || hasWon || gameOver || isFlipping;
 
   // Backend URL
   const BASE_URL = 'https://wordle-clone-moer.onrender.com';
@@ -41,7 +38,6 @@ function App() {
     setHasWon(false);
     setIsFlipping(false);
     setKeyColors({});
-    enterLocked.current = false;
     setGameStarted(true);
   };
 
@@ -84,120 +80,107 @@ function App() {
   };
 
   useEffect(() => {
-    const currentRowRef = useRef(currentRow);
-    const guessesRef = useRef(guesses);
-  
-    // Keep refs in sync with state
-    useEffect(() => {
-      currentRowRef.current = currentRow;
-      guessesRef.current = guesses;
-    }, [currentRow, guesses]);
-  
     const handleKeyDown = (e) => {
-      if (disableInput || enterLocked.current) return;
-  
-      const key = e.key.toUpperCase();
+      if (disableInput) return;
       if (!/^[A-Z]$/.test(key) && key !== 'BACKSPACE' && key !== 'ENTER') return;
-  
-      const currentGuess = guessesRef.current[currentRowRef.current];
-  
+      
+      const key = e.key.toUpperCase();
+      const currentGuess = guesses[currentRow];
+
       if (key === 'ENTER') {
         if (currentGuess.length === 5) {
-          enterLocked.current = true;
-  
+          setIsFlipping(true);
+
           checkGuessWithAPI(currentGuess).then((result) => {
+            // Display error if result is not valid
             if (!result.valid) {
               console.log('Not a valid word:', currentGuess);
-              setShakeRow(currentRowRef.current);
+
+              setShakeRow(currentRow);
               setInvalidText('Invalid Word');
-  
+
               setTimeout(() => {
                 setShakeRow(null);
                 setInvalidText('');
-                enterLocked.current = false;
+                setIsFlipping(false)
               }, 600);
-  
+
               return;
             }
-  
-            setIsFlipping(true);
-  
-            // Flip tiles
+
+            // Update each tile with letter + flip + color (one-by-one)
             result.colors.forEach((color, i) => {
               setTimeout(() => {
                 setTileStates((prev) => {
                   const updated = prev.map((row) => [...row]);
-                  updated[currentRowRef.current][i] = {
+                  updated[currentRow][i] = {
                     letter: currentGuess[i],
                     flip: true,
-                    color,
+                    color: color
                   };
                   return updated;
                 });
-              }, i * 500);
+              }, i * 500); // delay each flip
             });
-  
-            // Update keyboard colors
+
+            // Update Keyboard
             result.colors.forEach((color, i) => {
               const letter = currentGuess[i];
-              setKeyColors((prev) => {
+              setKeyColors(prev => {
                 const current = prev[letter];
-                if (current === 'green') return prev;
+                if (current === 'green') return prev; // don't downgrade
                 if (current === 'yellow' && color === 'gray') return prev;
                 return { ...prev, [letter]: color };
               });
             });
-  
-            // After flips
+
+            // Move to next row after flips finish
             setTimeout(() => {
               if (result.correct) {
+                // Show win screen after flips
                 setTimeout(() => {
                   setHasWon(true);
                   launchConfetti();
-                  enterLocked.current = false;
                 }, 250);
-              } else if (currentRowRef.current < 5) {
-                setCurrentRow((prev) => {
-                  currentRowRef.current = prev + 1;
-                  return prev + 1;
-                });
-                enterLocked.current = false;
-              } else {
+              } 
+              else if (currentRow < 5) {
+                // Proceed to next row
+                setCurrentRow((prev) => prev + 1);
+              } 
+              else {
+                // Game over - reveal word
                 setTimeout(() => {
                   fetch(`${BASE_URL}/reveal`, { credentials: 'include' })
-                    .then((res) => res.json())
-                    .then((data) => {
+                    .then(res => res.json())
+                    .then(data => {
                       setTargetWord(data.word);
                       setGameOver(true);
-                      enterLocked.current = false;
                     });
                 }, 250);
               }
-  
-              setIsFlipping(false);
             }, 5 * 500);
           });
         }
         return;
       }
-  
+
       if (key === 'BACKSPACE') {
-        const updated = [...guessesRef.current];
-        updated[currentRowRef.current] = currentGuess.slice(0, -1);
+        const updated = [...guesses];
+        updated[currentRow] = currentGuess.slice(0, -1);
         setGuesses(updated);
         return;
       }
-  
+
       if (currentGuess.length < 5) {
-        const updated = [...guessesRef.current];
-        updated[currentRowRef.current] = currentGuess + key;
+        const updated = [...guesses];
+        updated[currentRow] = currentGuess + key;
         setGuesses(updated);
       }
     };
-  
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [disableInput, checkGuessWithAPI]);
+  }, [guesses, currentRow]);
 
   return (
     <>
