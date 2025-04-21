@@ -1,20 +1,18 @@
-
-
 class WordleGame {
   constructor() {
     this.targetWord = '';
   }
-    
+
   async pickRandomWord() {
     let word = '';
     let isValid = false;
-    
+
     while (!isValid) {
       try {
         const res = await fetch('https://random-word-api.herokuapp.com/word?length=5');
         const [randomWord] = await res.json();
         word = randomWord.toUpperCase();
-    
+
         const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         console.log('Dictionary API status:', dictRes.status);
         isValid = dictRes.ok;
@@ -22,7 +20,7 @@ class WordleGame {
           console.error('Error fetching word:', err);
       }
     }
-    
+  
     this.targetWord = word;
     return word;
   }
@@ -47,7 +45,7 @@ class WordleGame {
       const letterCount = {};
 
       // Count letters in target word
-      for (let char of target) {
+        for (let char of target) {
         letterCount[char] = (letterCount[char] || 0) + 1;
       }
 
@@ -70,9 +68,9 @@ class WordleGame {
       return {
         valid: true,
         correct: guess === target,
-        colors,
+      colors,
       };
-      
+        
     } catch (err) {
       console.error('Validation error:', err);
       return { valid: false, correct: false, colors: [] };
