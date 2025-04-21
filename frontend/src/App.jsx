@@ -45,12 +45,14 @@ const initializeGameState = () => {
 };
 
 const startGame = async () => {
-  initializeGameState();
   console.log('[DEBUG] Start button clicked');
+  initializeGameState();
+  console.log('[DEBUG] Game Initialized');
   try {
     const res = await fetch(`${BASE_URL}/random-word`, {
       credentials:'include'
     });
+    console.log('[DEBUG] API Called');
   const data = await res.json();
   } catch (err) {
     console.error('Failed to start game:', err);
