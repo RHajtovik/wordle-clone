@@ -6,20 +6,14 @@ const WordleGame = require('./wordleGame');
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.set('trust proxy', 1);
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://main.dld996lhzd3lh.amplifyapp.com');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
-
 app.use(cors({
   origin: 'https://main.dld996lhzd3lh.amplifyapp.com',
   credentials: true 
 }));
 
 app.use(express.json());
+
+app.set('trust proxy', 1);
 
 app.use(session({
   secret: 'your-secret-key',
