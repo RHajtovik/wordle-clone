@@ -10,7 +10,6 @@ app.use(cors({
   origin: 'https://main.dld996lhzd3lh.amplifyapp.com',
   credentials: true 
 }));
-
 app.use(express.json());
 
 app.set('trust proxy', 1);
