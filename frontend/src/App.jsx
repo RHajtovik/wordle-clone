@@ -45,15 +45,12 @@ const initializeGameState = () => {
 };
 
 const startGame = async () => {
+  initializeGameState();
   try {
     const res = await fetch(`${BASE_URL}/random-word`, {
       credentials:'include'
     });
   const data = await res.json();
-
-  if (data.success) {
-    initializeGameState();
-  }
   } catch (err) {
     console.error('Failed to start game:', err);
   }
