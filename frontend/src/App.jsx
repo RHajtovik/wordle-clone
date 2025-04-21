@@ -85,13 +85,14 @@ useEffect(() => {
     if (disableInput) return;
 
     const key = e.key.toUpperCase();
-
     if (!/^[A-Z]$/.test(key) && key !== 'BACKSPACE' && key !== 'ENTER') return;
 
     const currentGuess = guesses[currentRow];
 
     if (key === 'ENTER') {
       if (currentGuess.length === 5) {
+        setIsFlipping(true);
+
         checkGuessWithAPI(currentGuess).then((result) => {
 
           if (!result.valid) {
@@ -103,12 +104,11 @@ useEffect(() => {
             setTimeout(() => {
               setShakeRow(null);
               setInvalidText('');
+              setIsFlipping(false);
             }, 600);
 
             return;
           }
-
-          setIsFlipping(true);
 
           // Update each tile with letter + flip + color (one-by-one)
           result.colors.forEach((color, i) => {
