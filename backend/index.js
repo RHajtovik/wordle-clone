@@ -21,7 +21,6 @@ app.use(session({
   cookie: {
     secure: true,
     sameSite: 'none',
-    domain: 'wordle-clone-moer.onrender.com',
     path: '/',
     httpOnly: true
   }
