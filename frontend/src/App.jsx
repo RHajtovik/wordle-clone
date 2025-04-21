@@ -46,6 +46,7 @@ const initializeGameState = () => {
 
 const startGame = async () => {
   initializeGameState();
+  console.log('[DEBUG] Start button clicked');
   try {
     const res = await fetch(`${BASE_URL}/random-word`, {
       credentials:'include'
