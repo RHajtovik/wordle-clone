@@ -29,7 +29,7 @@ const [shakeRow, setShakeRow] = useState(null);
 const [invalidText, setInvalidText] = useState('');
 
 // Backend URL
-const BASE_URL = 'https://wordle-api.rakun.company';
+const BASE_URL = 'https://main.dld996lhzd3lh.amplifyapp.com';
 
 const initializeGameState = () => {
   setGuesses(Array(6).fill(''));
@@ -41,6 +41,7 @@ const initializeGameState = () => {
   setIsFlipping(false);
   setGameOver(false);
   setKeyColors({});
+  setGameStarted(true);
 };
 
 const startGame = async () => {
@@ -52,11 +53,6 @@ const startGame = async () => {
       credentials: 'include'
     });
     const data = await res.json();
-
-    if (data.success) {
-      console.log('[DEBUG] API success, now initializing game');
-      setGameStarted(true);
-    }
   } catch (err) {
     console.error('Failed to start game:', err);
   }
