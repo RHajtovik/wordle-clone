@@ -41,11 +41,11 @@ const initializeGameState = () => {
   setIsFlipping(false);
   setGameOver(false);
   setKeyColors({});
-  setGameStarted(true);
 };
 
 const startGame = async () => {
   console.log('[DEBUG] Start button clicked');
+  initializeGameState();
 
   try {
     const res = await fetch(`${BASE_URL}/random-word`, {
@@ -55,7 +55,7 @@ const startGame = async () => {
 
     if (data.success) {
       console.log('[DEBUG] API success, now initializing game');
-      initializeGameState();
+      setGameStarted(true);
     }
   } catch (err) {
     console.error('Failed to start game:', err);
