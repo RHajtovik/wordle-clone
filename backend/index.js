@@ -17,7 +17,7 @@ app.set('trust proxy', 1);
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     secure: true,
     sameSite: 'none',
