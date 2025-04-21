@@ -7,7 +7,10 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors({
-  origin: 'https://play-wordle.rakun.company',
+  origin: [
+    'https://play-wordle.rakun.company',
+    'https://main.dld996lhzd3lh.amplifyapp.com'
+  ],
   credentials: true 
 }));
 app.use(express.json());
