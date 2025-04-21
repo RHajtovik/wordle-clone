@@ -20,7 +20,10 @@ app.use(session({
   saveUninitialized: true,
   cookie: {
     secure: true,
-    sameSite: 'none'
+    sameSite: 'none',
+    domain: 'wordle-clone-moer.onrender.com',
+    path: '/',
+    httpOnly: true
   }
 }));
 
