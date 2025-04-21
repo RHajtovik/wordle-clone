@@ -143,6 +143,10 @@
   color: var(--win-box-text);
 }
 
+.overlay-box {
+  color: var(--win-box-text);
+}
+
 .play-button {
   padding: 12px 24px;
   font-size: 1rem;
