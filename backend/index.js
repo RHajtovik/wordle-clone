@@ -34,7 +34,9 @@ app.get('/random-word', async (req, res) => {
   try {
     const word = await game.pickRandomWord();
     req.session.targetWord = word;
-    res.json({ success: true });
+    req.session.save(() => {
+      res.json({ success: true });
+    });
   } catch (err) {
     console.error('Failed to pick random word:', err);
     res.status(500).json({ success: false });
