@@ -21,7 +21,8 @@ app.use(session({
   saveUninitialized: true,
   cookie: {
     secure: true,
-    sameSite: 'none'
+    sameSite: 'none',
+    domain: '.onrender.com'
   }
 }));
 
