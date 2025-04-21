@@ -81,12 +81,12 @@ function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (disableInput) return;
-      if (!/^[A-Z]$/.test(key) && key !== 'BACKSPACE' && key !== 'ENTER') return;
-      
       const key = e.key.toUpperCase();
       const currentGuess = guesses[currentRow];
 
+      if (disableInput) return;
+      if (!/^[A-Z]$/.test(key) && key !== 'BACKSPACE' && key !== 'ENTER') return;
+      
       if (key === 'ENTER') {
         if (currentGuess.length === 5) {
           setIsFlipping(true);
