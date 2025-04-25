@@ -32,7 +32,7 @@ const [hintVisible, setHintVisible] = useState(false);
 const [hintButtonText, setHintButtonText] = useState("Show Hint");
 
 // Backend URL
-const BASE_URL = 'http://localhost:4000';
+const BASE_URL = 'https://wordle-api.rakun.company';
 
 const initializeGameState = () => {
   setGuesses(Array(6).fill(''));
