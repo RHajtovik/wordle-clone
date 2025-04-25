@@ -19,11 +19,11 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
     path: '/',
     httpOnly: true,
-    //domain: '.rakun.company'
+    domain: '.rakun.company'
   }
 }));
 
