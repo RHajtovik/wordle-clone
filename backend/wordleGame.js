@@ -22,11 +22,11 @@ class WordleGame {
   }
 
   async checkGuess(guess, targetWord) {
-    const guess = guess.toUpperCase();
+    const current = guess.toUpperCase();
     const target = targetWord.toUpperCase();;
 
     try {
-      const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${guess}`);
+      const dictRes = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${current}`);
       const isValidWord = dictRes.ok;
 
       if (!isValidWord) {
@@ -43,20 +43,20 @@ class WordleGame {
 
       // First pass: Green (correct position)
       for (let i = 0; i < 5; i++) {
-        if (guess[i] === target[i]) {
+        if (current[i] === target[i]) {
           colors[i] = 'green';
-          letterCount[guess[i]]--;
+          letterCount[current[i]]--;
         }
       }
 
       // Second pass: Yellow (correct letter, wrong position)
       for (let i = 0; i < 5; i++) {
-        if (colors[i] === 'gray' && letterCount[guess[i]] > 0) {
+        if (colors[i] === 'gray' && letterCount[current[i]] > 0) {
           const possibleIndices = [];
       
           // Find all remaining positions where the target has the same letter
           for (let j = 0; j < 5; j++) {
-            if (target[j] === guess[i] && colors[j] !== 'green') {
+            if (target[j] === current[i] && colors[j] !== 'green') {
               possibleIndices.push(j);
             }
           }
@@ -74,14 +74,14 @@ class WordleGame {
               colors[i] = 'red';
             }
       
-            letterCount[guess[i]]--;
+            letterCount[current[i]]--;
           }
         }
       }
 
       return {
         valid: true,
-        correct: guess === target,
+        correct: current === target,
         colors,
       };
         
