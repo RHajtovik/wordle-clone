@@ -1,7 +1,4 @@
 class WordleGame {
-  constructor() {
-    this.targetWord = '';
-  }
 
   async pickRandomWord() {
     let word = '';
@@ -20,17 +17,12 @@ class WordleGame {
           console.error('Error fetching word:', err);
       }
     }
-  
-    this.targetWord = word;
+
     return word;
   }
 
-  getTargetWord() {
-    return this.targetWord;
-  }
-
-  async checkGuess(word, targetWord) {
-    const guess = word.toUpperCase();
+  async checkGuess(guess, targetWord) {
+    const guess = guess.toUpperCase();
     const target = targetWord.toUpperCase();;
 
     try {
@@ -60,15 +52,37 @@ class WordleGame {
       // Second pass: Yellow (correct letter, wrong position)
       for (let i = 0; i < 5; i++) {
         if (colors[i] === 'gray' && letterCount[guess[i]] > 0) {
-          colors[i] = 'yellow';
-          letterCount[guess[i]]--;
+          const possibleIndices = [];
+      
+          // Find all remaining positions where the target has the same letter
+          for (let j = 0; j < 5; j++) {
+            if (target[j] === guess[i] && colors[j] !== 'green') {
+              possibleIndices.push(j);
+            }
+          }
+      
+          if (possibleIndices.length > 0) {
+            // Choose the one with the smallest distance
+            const distances = possibleIndices.map(j => Math.abs(j - i));
+            const minDistance = Math.min(...distances);
+      
+            if (minDistance === 1) {
+              colors[i] = 'yellow';
+            } else if (minDistance === 2) {
+              colors[i] = 'orange';
+            } else {
+              colors[i] = 'red';
+            }
+      
+            letterCount[guess[i]]--;
+          }
         }
       }
 
       return {
         valid: true,
         correct: guess === target,
-      colors,
+        colors,
       };
         
     } catch (err) {

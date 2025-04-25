@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import './App.css';
 import GameGrid from './components/GameGrid';
@@ -27,9 +27,12 @@ const [keyColors, setKeyColors] = useState({});
 // Feedback
 const [shakeRow, setShakeRow] = useState(null);
 const [invalidText, setInvalidText] = useState('');
+const hint = useRef(0);
+const [hintVisible, setHintVisible] = useState(false);
+const [hintButtonText, setHintButtonText] = useState("Show Hint");
 
 // Backend URL
-const BASE_URL = 'https://wordle-api.rakun.company';
+const BASE_URL = 'http://localhost:4000';
 
 const initializeGameState = () => {
   setGuesses(Array(6).fill(''));
@@ -37,11 +40,60 @@ const initializeGameState = () => {
   setCurrentRow(0);
   setShakeRow(null);
   setInvalidText('');
+  setHintVisible(false);
+  setHintButtonText('Show Hint');
   setHasWon(false);
   setIsFlipping(false);
   setGameOver(false);
   setKeyColors({});
   setGameStarted(true);
+};
+
+const launchConfetti = () => {
+  confetti({
+    particleCount: 150,
+    spread: 70,
+    origin: { y: 0.4 },
+    zIndex: 999
+  });
+};
+
+const showHint = async () => {
+  console.log('Show hint clicked');
+  if(hintVisible) {
+    setHintVisible(false);
+    setHintButtonText('Show Hint')
+    return;
+  }
+
+  try {
+    const res = await fetch(`${BASE_URL}/showHint`, {
+      credentials: 'include',
+      cache: 'no-store'
+    })
+    const data = await res.json();
+    hint.current = data.count;
+    setHintVisible(true);
+    setHintButtonText('Hide Hint');
+  }
+  catch (err) {
+    console.error('Error')
+  }
+}
+
+const checkGuessWithAPI = async (word) => {
+  try {
+    const res = await fetch(`${BASE_URL}/guess`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ word }),
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Error talking to backend:', err);
+    return { valid: false, correct: false, colors: [] };
+  }
 };
 
 const startGame = async () => {
@@ -59,29 +111,7 @@ const startGame = async () => {
   }
 };
 
-const launchConfetti = () => {
-  confetti({
-    particleCount: 150,
-    spread: 70,
-    origin: { y: 0.4 },
-    zIndex: 999
-  });
-};
 
-const checkGuessWithAPI = async (word) => {
-  try {
-    const res = await fetch(`${BASE_URL}/guess`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ word }),
-    });
-    return await res.json();
-  } catch (err) {
-    console.error('Error talking to backend:', err);
-    return { valid: false, correct: false, colors: [] };
-  }
-};
 
 let lastEnterTime = 0;
 const ENTER_DEBOUNCE_MS = 500;
@@ -102,9 +132,9 @@ useEffect(() => {
       lastEnterTime = now;
 
       if (currentGuess.length === 5) {
-        setIsFlipping(true);
 
-        checkGuessWithAPI(currentGuess).then((result) => {
+        checkGuessWithAPI(currentGuess)
+          .then((result) => {
 
           if (!result.valid) {
             console.log('Not a valid word:', currentGuess);
@@ -115,12 +145,12 @@ useEffect(() => {
             setTimeout(() => {
               setShakeRow(null);
               setInvalidText('');
-              setIsFlipping(false);
             }, 600);
 
             return;
           }
-
+          
+          setIsFlipping(true);
           // Update each tile with letter + flip + color (one-by-one)
           result.colors.forEach((color, i) => {
             setTimeout(() => {
@@ -137,13 +167,25 @@ useEffect(() => {
           });
 
           // Update Keyboard
+          const colorPriority = {
+            gray: 0,
+            red: 1,
+            orange: 2,
+            yellow: 3,
+            green: 4
+          };
+          
           result.colors.forEach((color, i) => {
             const letter = currentGuess[i];
             setKeyColors(prev => {
               const current = prev[letter];
-              if (current === 'green') return prev; // don't downgrade
-              if (current === 'yellow' && color === 'gray') return prev;
-              return { ...prev, [letter]: color };
+              const currentPriority = colorPriority[current] ?? -1;
+              const newPriority = colorPriority[color];
+          
+              if (newPriority > currentPriority) {
+                return { ...prev, [letter]: color };
+              }
+              return prev;
             });
           });
 
@@ -217,6 +259,9 @@ useEffect(() => {
         />
         <p className='signiture'>Ryan Hajtovik - GoLinks 2025 Summer Intern</p>
 
+        <button className="play-button" onClick={showHint}>{hintButtonText}</button>
+        <div className={`vowels ${hintVisible ? 'visible' : ''}`}>There are {hint.current} vowels</div>
+        
         {/* Start game Overlay */}
         {!gameStarted && <StartScreen startGame={startGame} />}
 

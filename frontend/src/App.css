@@ -76,6 +76,14 @@
   background-color: var(--yellow);
 }
 
+.tile-back.orange {
+  background-color: var(--orange);
+}
+
+.tile-back.red {
+  background-color: var(--red);
+}
+
 .tile-back.gray {
   background-color: var(--gray);
 }
@@ -196,6 +204,16 @@
   color: white;
 }
 
+.key.orange {
+  background-color: var(--orange);
+  color: white;
+}
+
+.key.red {
+  background-color: var(--red);
+  color: white;
+}
+
 .key.gray {
   background-color: var(--gray);
   color: white;
@@ -211,6 +229,18 @@
   justify-self: center;
   color: var(--text-color);
   text-align: center;
+}
+
+.vowels {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-color);
+  opacity: 0;
+  margin-bottom: 20px;
+  transition: opacity 0.3s ease;
+}
+.vowels.visible {
+  opacity: 1;
 }
 
 

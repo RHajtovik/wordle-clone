@@ -7,6 +7,8 @@
   /* Wordle colors */
   --green: #538d4e;
   --yellow: #B5934b;
+  --orange: #f5a623;
+  --red: #e74c3c;
   --gray: #3a3a3c;
 
   /* overlay */
@@ -22,6 +24,8 @@
 
     --green: #538d4e;
     --yellow: #B5934b;
+    --orange: #f5a623;
+    --red: #e74c3c;
     --gray: #3a3a3c;
 
     --win-box-bg: #1f1f1d;

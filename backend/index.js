@@ -9,7 +9,8 @@ const PORT = process.env.PORT || 4000;
 app.use(cors({
   origin: [
     'https://play-wordle.rakun.company',
-    'https://main.dld996lhzd3lh.amplifyapp.com'
+    'https://main.dld996lhzd3lh.amplifyapp.com',
+    'http://localhost:5173'
   ],
   credentials: true 
 }));
@@ -22,18 +23,33 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: true,
-    sameSite: 'none',
+    secure: false,
+    sameSite: 'lax',
     path: '/',
     httpOnly: true,
-    domain: '.rakun.company'
+    //domain: '.rakun.company'
   }
 }));
 
 const game = new WordleGame();
 
-app.get('/target', (req, res) => {
-  res.json({ message: 'Target word is set.' });
+app.get('/showHint', (req, res) => {
+  const word = req.session.targetWord;
+
+  if (!word) {
+    return res.status(400).json({ error: 'No target word in session' });
+  }
+
+  const vowels = 'aeiouAEIOU';
+  let count = 0;
+
+  for (let char of word) {
+    if (vowels.includes(char)) {
+      count++;
+    }
+  }
+
+  res.json({ count })
 });
 
 app.get('/random-word', async (req, res) => {
@@ -41,7 +57,8 @@ app.get('/random-word', async (req, res) => {
     const word = await game.pickRandomWord();
     req.session.targetWord = word;
     res.json({ success: true });
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('Failed to pick random word:', err);
     res.status(500).json({ success: false });
   }
@@ -61,7 +78,8 @@ app.post('/guess', async (req, res) => {
   try {
     const result = await game.checkGuess(guess, target);
     res.json(result);
-  } catch (err) {
+  } 
+  catch (err) {
     console.error('API error:', err);
     res.status(500).json({ valid: false, correct: false, colors: [] });
   }
